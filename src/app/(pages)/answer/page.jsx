@@ -3,7 +3,7 @@ import React from 'react';
 const Answer = () => {
 	return (
 		<div className="border border-green-500 rounded py-5 px-5 mt-5">
-			<div class="answerHeader">
+			<div className="answerHeader">
 				<h1>
 					You asked: <span id="userQuestion"></span>
 				</h1>

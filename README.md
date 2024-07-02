@@ -300,3 +300,118 @@
 ---
 
 ---
+
+<h3 align="center">BRANCH 1</h3>
+
+<h4 align="center">VERSION 1.0</h4>
+
+-   Initialized Version Branch (REF: 1 || FIRST)
+-   Continued TESD1400>M5>Project Final;
+-   Commited TTech EOD Progress;
+-   Pushed FIRST to ORIGIN;
+
+---
+
+<h5 align="center"><strong><em><u> ADDED </u></em></strong></h5>
+
+<table align="center">
+    <tr>
+        <th>ITEM</th>
+        <th>VERSION</th>
+        <th>DIR_LOC</th>
+        <th>COMMENT</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>|1|</td>
+        <td>=[N/A]</td>
+        <td>- Branch (REF: 1 || FIRST)</td>
+    </tr>
+    <tr>
+        <td>NextJS Application</td>
+        <td>|N/A|</td>
+        <td>=[MAINDIR\]</td>
+        <td>- npm[install react-router-dom]</td>
+    </tr>
+    <tr>
+        <td>(pages)\&+</td>
+        <td>|N/A|</td>
+        <td>=[src\app\]</td>
+        <td>- MC: All pages were moved under a named folder appropriate to page relevance.</td>
+    </tr>
+    <tr>
+        <td>Header.jsx</td>
+        <td>|1|</td>
+        <td>=[components\static\]</td>
+        <td></td>
+    </tr>
+</table>
+
+<h5 align="center"><strong><em><u> UPDATED </u></em></strong></h5>
+
+<table align="center">
+    <tr>
+        <th>ITEM</th>
+        <th>VERSION</th>
+        <th>DIR_LOC</th>
+        <th>COMMENT</th>
+    </tr>
+    <tr>
+        <td>(pages)\&+</td>
+        <td>&+|0.0|=>&+|1.0|</td>
+        <td>=[src\app\]</td>
+        <td>- MC: All .jsx renamed, folder name takes precedence.</td>
+    </tr>
+    <tr>
+        <td>Footer.jsx</td>
+        <td>|0.0|=>|1.0|</td>
+        <td>=[components\static\]</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Header.jsx</td>
+        <td>|1|=>|1.0|</td>
+        <td>=[components\static\]</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Navbar.jsx</td>
+        <td>|0.0|=>|1.0|</td>
+        <td>=[components\static\]</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>layout.js</td>
+        <td>|0|=>|1.0|</td>
+        <td>=[src\app\]</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>page.js</td>
+        <td>|0.0|=>|1.0|</td>
+        <td>=[src\app\]</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>README.md</td>
+        <td>|0.0|=>|1.0|</td>
+        <td>=[MAINDIR\]</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>|1|=>|1.0|</td>
+        <td>=[N/A]</td>
+        <td>- Branch (REF: 1 || FIRST)</td>
+    </tr>
+    <tr>
+        <td>ORIGIN</td>
+        <td>|N/A|=>|1.0|</td>
+        <td>=[N/A]</td>
+        <td>- Remote @[https://www.github.com/FunKodeT/M5PNRJSFinal.git]</td>
+    </tr>
+</table>
+
+---
+
+---

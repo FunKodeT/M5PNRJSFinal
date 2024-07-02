@@ -1,36 +1,44 @@
 import React from 'react';
+import Link from 'next/link';
 
 const Footer = () => {
 	return (
-		<footer className="border border-yellow-500 rounded py-5 px-5 mt-5">
-			<ul className="flex flex-row justify-between">
-				<li>
-					<a href="">Contact Us</a>
+		<footer className="flex flex-col mt-0 bg-gradient-to-br from-[#614a1a] via-[#1f1202]  to-[#00021f]">
+			<ul className="flex flex-col justify-center items-center">
+				<li className="text-center bg-gradient-to-tl from-bg-[#11111121] to-[#af800021] text-[#adadad] border border-b-[#af8000de] border-r-[#af8000de] border-l-[#af800056] border-t-[#af800021] rounded mt-2 px-2 py-1 w-[10%]">
+					<Link href="/contact">Contact Us</Link>
 				</li>
-				<li>
+				<li className="text-center bg-gradient-to-tl from-bg-[#11111121] to-[#af800021] text-[#adadad] border border-b-[#af8000] border-r-[#af8000de] border-l-[#af800056] border-t-[#af800021] rounded mt-2 px-2 py-1 w-[10%]">
+					<Link href="/about">About Us</Link>
+				</li>
+				<li className="text-center bg-gradient-to-tl from-bg-[#11111121] to-[#af800021] text-[#adadad] border border-b-[#af8000] border-r-[#af8000de] border-l-[#af800056] border-t-[#af800021] rounded mt-2 px-2 py-1 w-[10%]">
 					<a
 						href="https://en.wikipedia.org/wiki/Magic_8_Ball"
 						target="_blank">
 						Magic History Lesson
 					</a>
 				</li>
-				<li>
-					<a href="">About Us</a>
-				</li>
 			</ul>
 			<br />
-			<span className="flex flex-row justify-between">
-				<a href="https://www.copyright.gov/title17/" target="_blank">
+			<span className="grid grid-cols-3">
+				<Link
+					href="https://www.copyright.gov/title17/"
+					target="_blank"
+					className="text-center flex justify-center bg-gradient-to-br from-[#af800021] to-[#0001583f] text-[#adadad] border border-b-[#000158] border-r-[#0e0f4dad] border-l-[#00015869] border-t-[#0001583f] rounded px-2 py-1">
 					Magic 8-Ball © 2023-2024
-				</a>{' '}
-				<span>||</span>{' '}
-				<a href="https://tooeletech.edu/" target="_blank">
+				</Link>{' '}
+				<Link
+					href="https://tooeletech.edu/"
+					target="_blank"
+					className="text-center flex justify-center bg-gradient-to-br from-[#af800021] to-[#0001583f] text-[#adadad] border border-b-[#000158] border-r-[#0e0f4dad] border-l-[#00015869] border-t-[#0001583f] rounded px-2 py-1">
 					Tooele Technical College
-				</a>{' '}
-				<span>||</span>{' '}
-				<a href="https://github.com/FunKodeT" target="_blank">
+				</Link>{' '}
+				<Link
+					href="https://github.com/FunKodeT"
+					target="_blank"
+					className="text-center flex justify-center bg-gradient-to-br from-[#af800021] to-[#0001583f] text-[#adadad] border border-b-[#000158] border-r-[#0e0f4dad] border-l-[#00015869] border-t-[#0001583f] rounded px-2 py-1">
 					Matthew L. Cootey
-				</a>
+				</Link>
 			</span>
 		</footer>
 	);

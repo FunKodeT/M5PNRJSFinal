@@ -3,7 +3,7 @@ import React from 'react';
 const Register = () => {
 	return (
 		<div className="border border-gray-500 rounded py-5 px-5 mt-5">
-			<div class="registerHeader">
+			<div className="registerHeader">
 				<h1>Would you like to register with us?</h1>
 				<div>
 					<p>
@@ -38,7 +38,7 @@ const Register = () => {
 						required
 					/>
 					<br />
-					<span id="errMsg" class="error">
+					<span id="errMsg" className="error">
 						{/* style="display: none" */}
 						Passwords do not match
 					</span>
@@ -47,14 +47,14 @@ const Register = () => {
 						id="registerSubmit"
 						type="submit"
 						value="Create Account"
-						class="homeTrigger"
+						className="homeTrigger"
 						disabled
 					/>
 				</form>
 				<button
 					type="button"
 					id="homeTrigger"
-					class="homePage"
+					className="homePage"
 					onclick="swapPrep(this)">
 					Home
 				</button>
