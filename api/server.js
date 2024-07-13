@@ -60,7 +60,10 @@ mongoDb.initDb((err) => {
 		console.log('Failure: ', err);
 	} else {
 		app.listen(PORT);
-		console.log('Success: Database Connected, Server initialized');
+		console.log(
+			'Success: Database Connected, Server initialized. Connected to: ',
+			PORT
+		);
 	}
 });
 // END: SERVER INITIALIZATION
