@@ -11,7 +11,7 @@ function fetcher(url) {
 			return resp.json();
 		})
 		.then((response) => {
-			response.text();
+			response.json();
 		})
 		.then((data) => {
 			resolve(data ? JSON.parse(data) : {});
