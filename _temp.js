@@ -1,6 +1,5 @@
 // --------------------------------------------------------------------------
-// --------------------------------------------------------------------------
-// TEMP
+let temp1 = {
 const userSchema = Schema({
 	_id: Schema.Types.ObjectId,
 	username: String,
@@ -16,7 +15,9 @@ const predictionSchema = Schema({
 
 const User = mongoose.model('User', userSchema)
 const Prediction = mongoose.model('Prediction', predictionSchema)
+}
 // --------------------------------------------------------------------------
+let temp2 = {
 const createdBy = new User({
 	_id: new mongoose.Types.ObjectId(),
 	username: 'TestesMcGee',
@@ -29,18 +30,22 @@ const prediction = new Prediction({
 	createdBy: createdBy._id
 })
 await prediction.save()
+}
 // --------------------------------------------------------------------------
-const prediction = await Prediction.findOne({title: 'Predict This'}).populate('createdBy').exec()
+let temp3 = {const prediction = await Prediction.findOne({title: 'Predict This'}).populate('createdBy').exec()
 
 console.log('The name is %s', prediction.createdBy.username)
 // EXPECTED OUTPUT: CONSOLE>THE NAME IS TESTESMCGEE
+}
 // --------------------------------------------------------------------------
-const prediction = await Prediction.findOne({title: 'Predict This'})
+let temp4 = {const prediction = await Prediction.findOne({title: 'Predict This'})
 prediction.createdBy = createdBy
 
 console.log(prediction.createdBy.username)
 // EXPECTED OUTPUT: CONSOLE>TESTES MCGEE
+}
 // --------------------------------------------------------------------------
+let temp5 = {
 prediction.populated('createdBy')
 // EXPECTED: VALUE>TRUE
 prediction.createdBy._id
@@ -49,18 +54,17 @@ prediction.depopulate('createdBy')
 // EXPECTED: VALUE=>UNDEFINED
 prediction.populated('createdBy')
 // EXPECTED: VALUE>UNDEFINED
+}
 // --------------------------------------------------------------------------
+let temp6 = {
 const prediction = await Prediction.findOne({title: /Predict This/i}).populate('createdBy', 'username').exec()
 console.log('The user is %s', prediction.createdBy.name)
 // EXPECTED: CONSOLE>THE USER IS TESTES MCGEE
 console.log('The users age is %s', prediction.createdBy.firstname)
 // EXPECTED: THE USERS AGE IS NULL
+}
 // --------------------------------------------------------------------------
-// TEMP
-// --------------------------------------------------------------------------
-// --------------------------------------------------------------------------
-// TEMP
-// --------------------------------------------------------------------------
+let temp7 = {
 const server = {
 const adRou = require('./routes/admin.js');
 app.use(express.json()).use((req, res, next) => {
@@ -246,6 +250,35 @@ const middlewareAuth = {
     		}
     	}
     };
-}
+
 module.exports = {postNewPrediction}
+}
 // --------------------------------------------------------------------------
+let temp8 = {
+    import type { InferGetServerSidePropsType, GetServerSideProps } from 'next';
+
+    type Repo = {
+        name: String,
+        predictions: String,
+    }
+
+    export const GetServerSideProps = (async () => {
+        // FETCH DATA FROM API
+        const res = await fetch('http://localhost:3000/data', {mode: 'no-cors'})
+        const repo = Repo = await res.json()
+        // PASS DATA TO PAGE FROM PROPS
+        return { props: {repo }}
+    }) satisfies GetServerSideProps<{ repo: Repo }>
+
+    export default function Page({
+        repo,
+    }: InferGetServerSidePropsType<typeof GetServerSideProps>) {
+        return (
+            <main>
+                <p>
+                    {repo.predictions}
+                </p>
+            </main>
+        )
+    }
+}

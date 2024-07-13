@@ -7,6 +7,7 @@ const session = require('express-session');
 const mongoDb = require('./database/connect.js');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const app = express();
 // --------------------------------------------------------------------------
 // START: JSON AUTHENTICATION
@@ -41,11 +42,21 @@ app.use(cookieParser());
 app.use(session(tempSesh));
 app.use(express.urlencoded({extended: true}));
 
-app.use(express.json())
+/* app.use(express.json())
 	.use((req, res, next) => {
 		next();
 	})
+	.use('/', require('./routes/admin.js')); */
+
+app.use(cors())
+	.use(express.json())
+	.use((req, res, next) => {
+		res.setHeader('Access-Control-Allow-Origin', '*');
+		next();
+	})
 	.use('/', require('./routes/admin.js'));
+// This will throw an error when not connected via ethernet
+
 app.get('/', (req, res) => {
 	if (req.cookies.jtkn) {
 		const verify = JWT.verify(req.cookies.jtkn, jTKN);

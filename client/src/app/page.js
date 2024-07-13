@@ -3,18 +3,59 @@ import Image from 'next/image';
 import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import Link from 'next/link';
+import useSWR from 'swr';
+import fetcher from './components/static/fetcher';
+
 const URI = process.env.MONGO_URI;
 
 export default function Home() {
-	const [predictions, setPredictions] = useState([]);
-	const [query, setQuery] = useState('');
-	useEffect(() => {
-		getPredictions();
-	}, [query]);
+	const {data, error, isLoading} = useSWR(
+		'https://m5pnrjsfinalapi.onrender.com/data',
+		fetcher
+	);
+	if (error) return console.log('Failure: Fetcher -> ', error);
+	if (isLoading) return console.log('Fetcher -> Loading...');
+	return console.log('Success: Fetcher -> ', data);
+	// const [predictions, setPredictions] = useState([]);
+	// const [query, setQuery] = useState('');
 
-	const getPredictions = async () => {
-		fetch(URI);
-	};
+	/* useEffect(() => {
+		fetch(`http://localhost:3000/data`, {mode: 'no-cors'})
+			.then((res) => {
+				return res.json();
+			})
+			.then((data) => {
+				console.log(data);
+				setPredictions(data);
+			});
+	}, []); */
+
+	/* useEffect(() => {
+		getPredictionsLocal();
+	}, []); */
+
+	/* const getPredictionsLocal = async () => {
+		fetch(`http://localhost:3000/data`, {mode: 'no-cors'})
+			.then((x) => x.json())
+			.then((y) => {
+				setPredictions(y.hits);
+				console.log(y.hits);
+			});
+	}; */
+
+	/* 	useEffect(() => {
+		getPredictions();
+	}, [query]); */
+
+	/* 	const getPredictions = async () => {
+		fetch(`https://m5pnrjsfinalapi.onrender.com/data`)
+			.then((x) => x.json())
+			.then((y) => {
+				setPredictions(y.hits);
+				console.log(y.hits);
+			});
+	}; */
+
 	return (
 		<div className="border border-gray-900 rounded py-5 px-5 mt-5">
 			<div className="homeHeader">
