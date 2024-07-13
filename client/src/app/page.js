@@ -1,9 +1,20 @@
 'use client';
 import Image from 'next/image';
+import React, {useEffect, useState} from 'react';
 import {Route, Routes} from 'react-router-dom';
 import Link from 'next/link';
+const URI = process.env.MONGO_URI;
 
 export default function Home() {
+	const [predictions, setPredictions] = useState([]);
+	const [query, setQuery] = useState('');
+	useEffect(() => {
+		getPredictions();
+	}, [query]);
+
+	const getPredictions = async () => {
+		fetch(URI);
+	};
 	return (
 		<div className="border border-gray-900 rounded py-5 px-5 mt-5">
 			<div className="homeHeader">

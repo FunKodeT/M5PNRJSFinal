@@ -9,8 +9,8 @@ const Ask = () => {
 			<form action="/answer" method="post" id="askForm">
 				<input
 					type="text"
-					name="magicQuestion"
-					id="magicQuestion"
+					name="question"
+					id="question"
 					placeholder="Ask your question!"
 					required
 				/>
