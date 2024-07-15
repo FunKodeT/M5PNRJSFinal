@@ -2,14 +2,20 @@
 import React from 'react';
 import {useState} from 'react';
 import Link from 'next/link';
-import postPredictionHandler from '@/app/components/static/handlers';
+import postPredictionHandler from '@/app/components/static/Handlers/Handlers';
 
 const Ask = () => {
-	const [question, setQuestion] = useState('');
+	const [question, setQuestion] = useState();
 
-	const submitData = async () => {
+	const submitData = async (req, res) => {
+		console.log('Start: submitData');
+		console.log('Start: questionReq');
+		let sentQuestion = question;
+		console.log('Success: questionReq', sentQuestion);
+		console.log('Start: submitResponse');
 		let response = await fetch(
-			'https://m5pnrjsfinalapi.onrender.com/data',
+			// 'https://m5pnrjsfinalapi.onrender.com/data',
+			'http://localhost:3000/data',
 			{
 				mode: 'no-cors',
 				method: 'POST',
@@ -18,12 +24,21 @@ const Ask = () => {
 					userId: 1,
 				}),
 				headers: {
-					'Content-type': 'application/json',
+					'Content-Type': 'application/json',
 				},
 			}
 		);
-		response = await response.json();
-		alert(JSON.stringify(response));
+
+		console.log('Response', await response);
+		response = await JSON.stringify(response);
+
+		console.log('Success: submitResponse', response);
+		if (response.ok) {
+			console.log('Success: submitData');
+			alert(JSON.stringify(response));
+		} else {
+			console.log('Failure: submitData');
+		}
 	};
 
 	return (
@@ -31,12 +46,11 @@ const Ask = () => {
 			<div className="askHeader">
 				<h1>What future do you wish to know?</h1>
 			</div>
-			<form id="askForm">
+			<form action="post" id="askForm">
 				<input
 					type="text"
 					name="question"
 					id="question"
-					value={question}
 					onChange={(e) => setQuestion(e.target.value)}
 					placeholder="Ask your question!"
 					required
@@ -46,6 +60,7 @@ const Ask = () => {
 					<button
 						id="answerTrigger"
 						type="submit"
+						//value={question}
 						onClick={submitData}>
 						Receive Revelation!
 					</button>

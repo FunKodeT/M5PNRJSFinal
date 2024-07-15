@@ -4,6 +4,7 @@ const mongoDb = require('../database/connect.js');
 const ObjectId = require('mongodb').ObjectId;
 const mongoose = require('mongoose');
 const {User, Prediction} = require('../models/User.js');
+const cookie = require('cookie-parser');
 // END: USERDATA.JS REQUIREMENTS FOR FUNCTIONALITY
 // --------------------------------------------------------------------------
 // START: CRUD FUNCTIONS
@@ -58,94 +59,133 @@ const getOnePrediction = async (req, res) => {
 };
 // --------------------------------------------------------------------------
 const postNewPrediction = async (req, res) => {
-	console.log('Start: postNewPrediction');
-	const seshUser = req.cookie.connect;
-	console.log(seshUser);
-	if (seshUser) {
-		await User.findById(req.connect.sid, (err, user) => {
-			try {
-				console.log('Start: askObject');
-				let newPrediction = {
-					question: req.body.question,
-					answer: '',
-				};
-				console.log('Success: askObject', newPrediction);
-				console.log('Start: insertNew');
-				newPrediction.answer = askAnswer();
-				console.log(newPrediction.answer);
-				const prediction = new Prediction({
-					_id: new mongoose.Types.ObjectId(),
-					createdBy: req.user._id,
-					question: newPrediction.question,
-					answer: newPrediction.answer,
-				});
-				Prediction.create(prediction, (err, prediction) => {
-					user.predictions.push(prediction);
-					user.save();
-				});
-				const response = mongoDb
-					.getDb()
-					.db()
-					.collection('Prediction')
-					.insertOne(prediction);
-				console.log(response);
-				console.log('Success: insertNew');
-				// const assignUser = Prediction.findOne({
-				// 	question: prediction._id,
-				// }).populate('us');
-				if (response) {
-					res.status(201).json(response);
-					console.log('Success: postNewPrediction');
-				} else if (!response) {
-					res.status(500).json(response.error);
-				}
-			} catch (error) {
-				res.status(500).json(error);
-				console.log('Failure: postNewPrediction', error);
-			}
+	console.log('Start: postNewPrediction', req.body);
+	try {
+		console.log('Start: askObject');
+		let question = await req.body;
+		console.log('Success: askObject', question);
+		console.log('Start: createAnswer');
+		const answer = askAnswer();
+		console.log('Success: createAnswer', answer);
+		console.log('Start: assignUserTkn');
+		const createdBy = req.cookies['jtkn'];
+		console.log('Success: assignUserTkn', createdBy);
+		console.log('Start: newPredictionModel');
+		const prediction = new Prediction({
+			_id: new mongoose.Types.ObjectId(),
+			createdBy: createdBy,
+			question: question,
+			answer: answer,
 		});
-	} else {
-		try {
-			console.log('Start: askObject');
-			let newPrediction = {
-				question: req.body.question,
-				answer: '',
-			};
-			console.log('Success: askObject', newPrediction);
-			console.log('Start: insertNew');
-			newPrediction.answer = askAnswer();
-			console.log(newPrediction.answer);
-			const prediction = new Prediction({
-				_id: new mongoose.Types.ObjectId(),
-				createdBy: req.user._id,
-				question: newPrediction.question,
-				answer: newPrediction.answer,
-			});
-			Prediction.create(prediction, (err, prediction) => {
-				user.predictions.push(prediction);
-				user.save();
-			});
-			const response = mongoDb
-				.getDb()
-				.db()
-				.collection('Prediction')
-				.insertOne(prediction);
-			console.log(response);
-			console.log('Success: insertNew');
-			// const assignUser = Prediction.findOne({
-			// 	question: prediction._id,
-			// }).populate('us');
-			if (response) {
-				res.status(201).json(response);
-				console.log('Success: postNewPrediction');
-			} else if (!response) {
-				res.status(500).json(response.error);
-			}
-		} catch (error) {
-			res.status(500).json(error);
-			console.log('Failure: postNewPrediction', error);
+		/* 		Prediction.create(prediction, (err, prediction) => {
+			user.predictions.push(prediction);
+			user.save();
+		}); */
+		console.log('Success: newPredictionModel');
+		console.log('Start: insertNewPrediction');
+		const response = await mongoDb
+			.getDb()
+			.db()
+			.collection('Prediction')
+			.insertOne(prediction);
+		console.log('Success: insertNewPrediction', response);
+		if (response) {
+			res.status(201).json(response);
+			console.log('Success: postNewPrediction');
+			console.log('Server Response', response);
+			return response;
+		} else if (!response) {
+			res.status(500).json(response.error);
 		}
+	} catch (error) {
+		res.status(500).json(error);
+		console.log('Failure: postNewPrediction', error);
 	}
+	// if (seshUser) {
+	// 	await User.findById(req.connect.sid, (err, user) => {
+	// 		try {
+	// 			console.log('Start: askObject');
+	// 			let newPrediction = {
+	// 				question: req.body.question,
+	// 				answer: '',
+	// 			};
+	// 			console.log('Success: askObject', newPrediction);
+	// 			console.log('Start: insertNew');
+	// 			newPrediction.answer = askAnswer();
+	// 			console.log(newPrediction.answer);
+	// 			const prediction = new Prediction({
+	// 				_id: new mongoose.Types.ObjectId(),
+	// 				createdBy: req.user._id,
+	// 				question: newPrediction.question,
+	// 				answer: newPrediction.answer,
+	// 			});
+	// 			Prediction.create(prediction, (err, prediction) => {
+	// 				user.predictions.push(prediction);
+	// 				user.save();
+	// 			});
+	// 			const response = mongoDb
+	// 				.getDb()
+	// 				.db()
+	// 				.collection('Prediction')
+	// 				.insertOne(prediction);
+	// 			console.log(response);
+	// 			console.log('Success: insertNew');
+	// 			// const assignUser = Prediction.findOne({
+	// 			// 	question: prediction._id,
+	// 			// }).populate('us');
+	// 			if (response) {
+	// 				res.status(201).json(response);
+	// 				console.log('Success: postNewPrediction');
+	// 			} else if (!response) {
+	// 				res.status(500).json(response.error);
+	// 			}
+	// 		} catch (error) {
+	// 			res.status(500).json(error);
+	// 			console.log('Failure: postNewPrediction', error);
+	// 		}
+	// 	});
+	// } else {
+	// 	try {
+	// 		console.log('Start: askObject');
+	// 		let newPrediction = {
+	// 			question: req.body.question,
+	// 			answer: '',
+	// 		};
+	// 		console.log('Success: askObject', newPrediction);
+	// 		console.log('Start: insertNew');
+	// 		newPrediction.answer = askAnswer();
+	// 		console.log(newPrediction.answer);
+	// 		const prediction = new Prediction({
+	// 			_id: new mongoose.Types.ObjectId(),
+	// 			createdBy: req.user._id,
+	// 			question: newPrediction.question,
+	// 			answer: newPrediction.answer,
+	// 		});
+	// 		Prediction.create(prediction, (err, prediction) => {
+	// 			user.predictions.push(prediction);
+	// 			user.save();
+	// 		});
+	// 		const response = mongoDb
+	// 			.getDb()
+	// 			.db()
+	// 			.collection('Prediction')
+	// 			.insertOne(prediction);
+	// 		console.log(response);
+	// 		console.log('Success: insertNew');
+	// 		// const assignUser = Prediction.findOne({
+	// 		// 	question: prediction._id,
+	// 		// }).populate('us');
+	// 		if (response) {
+	// 			res.status(201).json(response);
+	// 			console.log('Success: postNewPrediction');
+	// 		} else if (!response) {
+	// 			res.status(500).json(response.error);
+	// 		}
+	// 	} catch (error) {
+	// 		res.status(500).json(error);
+	// 		console.log('Failure: postNewPrediction', error);
+	// 	}
+	// }
 };
 // --------------------------------------------------------------------------
 const patchPrediction = async (req, res) => {
