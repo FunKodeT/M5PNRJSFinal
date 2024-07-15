@@ -59,9 +59,52 @@ const getOnePrediction = async (req, res) => {
 // --------------------------------------------------------------------------
 const postNewPrediction = async (req, res) => {
 	console.log('Start: postNewPrediction');
-	const seshUser = req.session.user;
+	const seshUser = req.cookie.connect;
 	console.log(seshUser);
-	await User.findById(req.user.id, (err, user) => {
+	if (seshUser) {
+		await User.findById(req.connect.sid, (err, user) => {
+			try {
+				console.log('Start: askObject');
+				let newPrediction = {
+					question: req.body.question,
+					answer: '',
+				};
+				console.log('Success: askObject', newPrediction);
+				console.log('Start: insertNew');
+				newPrediction.answer = askAnswer();
+				console.log(newPrediction.answer);
+				const prediction = new Prediction({
+					_id: new mongoose.Types.ObjectId(),
+					createdBy: req.user._id,
+					question: newPrediction.question,
+					answer: newPrediction.answer,
+				});
+				Prediction.create(prediction, (err, prediction) => {
+					user.predictions.push(prediction);
+					user.save();
+				});
+				const response = mongoDb
+					.getDb()
+					.db()
+					.collection('Prediction')
+					.insertOne(prediction);
+				console.log(response);
+				console.log('Success: insertNew');
+				// const assignUser = Prediction.findOne({
+				// 	question: prediction._id,
+				// }).populate('us');
+				if (response) {
+					res.status(201).json(response);
+					console.log('Success: postNewPrediction');
+				} else if (!response) {
+					res.status(500).json(response.error);
+				}
+			} catch (error) {
+				res.status(500).json(error);
+				console.log('Failure: postNewPrediction', error);
+			}
+		});
+	} else {
 		try {
 			console.log('Start: askObject');
 			let newPrediction = {
@@ -102,7 +145,7 @@ const postNewPrediction = async (req, res) => {
 			res.status(500).json(error);
 			console.log('Failure: postNewPrediction', error);
 		}
-	});
+	}
 };
 // --------------------------------------------------------------------------
 const patchPrediction = async (req, res) => {
