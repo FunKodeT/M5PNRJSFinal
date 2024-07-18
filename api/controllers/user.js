@@ -1,14 +1,13 @@
 // --------------------------------------------------------------------------
 // START: USER.JS REQUIREMENTS FOR FUNCTION
 const express = require('express');
-const session = require('express-session');
 const mongoDb = require('../database/connect.js');
 const ObjectId = require('mongodb').ObjectId;
 const mongoose = require('mongoose');
 const {User, Prediction} = require('../models/User');
-const cookie = require('cookie-parser');
 const bcrypt = require('bcryptjs');
 const JWT = require('jsonwebtoken');
+// const {UnorderedBulkOperation} = require('mongodb');
 const jTKN = process.env.SCRT_TKN;
 
 // END: USER.JS REQUIREMENTS FOR FUNCTION
@@ -48,13 +47,14 @@ const getOneUser = async (req, res) => {
 			.find({_id: userId});
 		console.log('Success: findUser');
 		console.log('Start: toArray');
-		findUser.toArray().then((lists) => {
-			res.setHeader('Content-Type', 'application/json');
-			res.status(200).json(lists[0]);
-			console.log('Success: toArray');
-		});
-		console.log('Success: user', userId);
-		console.log('Success: getOneUser');
+		if (findUser) {
+			findUser.toArray().then((lists) => {
+				res.setHeader('Content-Type', 'application/json');
+				res.status(200).json(lists[0]);
+				console.log('Success: toArray');
+				console.log('Success: getOneUser', userId);
+			});
+		}
 	} catch (error) {
 		res.status(500).json(error);
 		console.log('Failure: getOneUser');
@@ -63,7 +63,6 @@ const getOneUser = async (req, res) => {
 // --------------------------------------------------------------------------
 const postNewUser = async (req, res) => {
 	console.log('Start: postNewUser');
-	let user = this;
 	const salt = 10;
 	try {
 		console.log('Start: userObject');
@@ -125,11 +124,8 @@ const postNewUser = async (req, res) => {
 		console.log(response);
 		console.log('Success: insertNew');
 		if (response) {
-			res.status(201).json(response);
-			req.session.user = user.token;
-			const seshUser = req.session.user;
-			console.log(seshUser);
 			console.log('Success: postNewUser');
+			res.status(201).json(response);
 		} else if (!response) {
 			res.status(500).json(response.error);
 		}
@@ -215,9 +211,12 @@ const loginUser = async (req, res) => {
 	try {
 		console.log('Start: reqUserInput');
 		let {username, password} = req.body;
+		console.log(username, password);
 		if (!username || !password) {
 			console.log('Failure: reqUserInput');
-			res.status(400).json({message: 'Fields Require Additional Data'});
+			res.status(400).json({
+				message: 'Fields Require Additional Data',
+			});
 			return;
 		}
 		console.log('Success: reqUserInput', {username, password});
@@ -241,26 +240,13 @@ const loginUser = async (req, res) => {
 			console.log('Failure: chkPw');
 			return res.status(401).json({msg: 'Invalid Password'});
 		} else {
-			// console.log('Start: Session Data');
-			// req.session.save(() => {
-			// 	req.session.logged_in = true;
-			// 	req.session.user = {
-			// 		id: data._id,
-			// 		name: data.firstname,
-			// 		username: data.username,
-			// 	};
-			// });
-			// console.log('Success: Session Data');
 			console.log('Start: tokenAssign');
-			res.cookie('jtkn', user.token, {
-				maxAge: 600000,
-				httpOnly: true,
-			});
+			const token = JWT.sign({userId: user._id}, jTKN);
 			console.log('Success: tokenAssign', user.token);
-			req.session.user = user;
-			const seshUser = req.session.user;
-			console.log(seshUser);
-			res.status(200).send('Authorization Approved');
+			res.status(200).send({
+				msg: 'Authorization Approved',
+				user: user._id,
+			});
 		}
 		console.log('Success: chkPw');
 		console.log('Success: authLogin');
@@ -276,6 +262,146 @@ const loginUser = async (req, res) => {
 };
 // END: CRUD FUNCTIONS
 // --------------------------------------------------------------------------
+// START: MISCELLANEOUS REQUIRED FUNCTIONS
+const getUserPrediction = async (req, res) => {
+	console.log('Start: getUserPrediction');
+	try {
+		console.log('Start: createIdFromReq');
+		const userId = ObjectId.createFromHexString(req.params.id);
+		console.log('Success: createIdFromReq', userId);
+		console.log('Start: findUser');
+		console.log('Start: verifyUser');
+		const verifyUser = await mongoDb
+			.getDb()
+			.db()
+			.collection('User')
+			.find({_id: userId});
+		console.log('Success: verifyUser');
+		if (verifyUser) {
+			const findUser = await mongoDb
+				.getDb()
+				.db()
+				.collection('User')
+				.find({_id: userId})
+				.project({predictions: 1});
+			console.log(findUser);
+			res.setHeader('Content-Type', 'application/json');
+			console.log('Start: user?');
+			if (!findUser || findUser.length === 0) {
+				console.log('Failure: findUser');
+				res.status(500).json({
+					msg: 'There was an error with your request',
+				});
+				return;
+			} else {
+				console.log('Success: user?');
+				console.log('Start: toArray');
+				findUser.toArray().then((lists) => {
+					res.setHeader('Content-Type', 'application/json');
+					res.status(200).json(lists[0]);
+					console.log('Success: toArray');
+				});
+				console.log('Success: getUserPrediction');
+			}
+
+			// console.log('Start: toArray');
+			// if (findUser) {
+			// 	findUser.toArray().then((lists) => {
+			// 		res.setHeader('Content-Type', 'application/json');
+			// 		res.status(200).json(lists[0]);
+			// 		console.log('Success: toArray');
+			// 		console.log('Success: getOneUser', userId);
+			// 	});
+			// }
+		} else {
+			const checkGuest = await mongoDb
+				.getDb()
+				.db()
+				.collection('User')
+				.find({_id: userId});
+			if (checkGuest == null || undefined) {
+				console.log('Failure: findUser');
+				res.status(500).json({
+					msg: 'There was an error with your request',
+				});
+			} else {
+				console.log('Success: user?');
+				console.log('Start: toArray');
+				findUser.toArray().then((lists) => {
+					res.setHeader('Content-Type', 'application/json');
+					res.status(200).json(lists[0]);
+					console.log('Success: toArray');
+				});
+				console.log('Success: getUserPrediction');
+			}
+			// console.log('Success: verifyUser');
+			// console.log('Start: toArray');
+			// if (checkGuest) {
+			// 	checkGuest.toArray().then((lists) => {
+			// 		res.setHeader('Content-Type', 'application/json');
+			// 		res.status(200).json(lists[0]);
+			// 		console.log('Success: toArray');
+			// 		console.log('Success: getOneUser', userId);
+			// 	});
+			// }
+		}
+	} catch (error) {
+		res.status(500).json(error);
+		console.log('Failure: getUserPrediction');
+	}
+};
+
+/* const getUserPrediction = async (req, res) => {
+	console.log('Start: getUserPrediction');
+	try {
+		const userId = req.params.id;
+
+		if (!mongoose.Types.ObjectId.isValid(userId)) {
+			// Handle guest user
+			console.log('Guest user detected');
+			const findGuest = await mongoDb
+				.getDb()
+				.db()
+				.collection('Prediction')
+				.find({createdBy: userId})
+				.toArray();
+
+			if (findGuest.length === 0) {
+				console.log('Failure: findGuest');
+				res.status(404).json({
+					msg: 'No predictions found for guest user',
+				});
+			} else {
+				console.log('Success: findGuest', findGuest);
+				res.status(200).json(findGuest);
+			}
+			return;
+		}
+
+		console.log('Start: createIdFromReq');
+		const objectId = new mongoose.Types.ObjectId(userId);
+		console.log('Success: createIdFromReq', objectId);
+
+		const findUser = await mongoDb
+			.getDb()
+			.db()
+			.collection('User')
+			.findOne({_id: objectId}, {projection: {predictions: 1}});
+
+		if (!findUser) {
+			console.log('Failure: findUser');
+			res.status(404).json({msg: 'User not found'});
+		} else {
+			console.log('Success: findUser', findUser);
+			res.status(200).json(findUser);
+		}
+	} catch (error) {
+		res.status(500).json(error);
+		console.log('Failure: getUserPrediction', error);
+	}
+}; */
+// END: MISCELLANEOUS REQUIRED FUNCTIONS
+// --------------------------------------------------------------------------
 // START: MODULE EXPORT
 module.exports = {
 	getAllUser,
@@ -284,6 +410,7 @@ module.exports = {
 	patchUser,
 	deleteUser,
 	loginUser,
+	getUserPrediction,
 };
 // END: MODULE EXPORT
 // --------------------------------------------------------------------------

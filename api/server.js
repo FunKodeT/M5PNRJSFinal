@@ -6,7 +6,7 @@ const express = require('express');
 const session = require('express-session');
 const mongoDb = require('./database/connect.js');
 const mongoose = require('mongoose');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const app = express();
 // --------------------------------------------------------------------------
@@ -25,12 +25,12 @@ const PORT = process.env.PORT || 3000;
 // END: APP FUNCTIONALITY
 // --------------------------------------------------------------------------
 // START: SESSION TOKENIZATION
-const tempSesh = {
+/* const tempSesh = {
 	secret: tTKN,
-	cookie: {},
+	// cookie: {},
 	resave: false,
 	saveUninitialized: true,
-};
+}; */
 // END: SESSION TOKENIZATION
 // --------------------------------------------------------------------------
 // END: SERVER.JS REQUIREMENTS FOR FUNCTIONALITY
@@ -38,8 +38,14 @@ const tempSesh = {
 // ==========================================================================
 // START: SERVER MIDDLEWARE
 app.use(express.json());
-app.use(cookieParser());
-app.use(session(tempSesh));
+// app.use(cookieParser());
+app.use(
+	session({
+		resave: false,
+		saveUninitialized: true,
+		secret: tTKN,
+	})
+);
 app.use(express.urlencoded({extended: true}));
 
 /* app.use(express.json())
@@ -56,13 +62,13 @@ app.use(cors())
 	})
 	.use('/', require('./routes/admin.js'));
 // This will throw an error when not connected via ethernet
-
+/* 
 app.get('/', (req, res) => {
-	if (req.cookies.jtkn) {
+	if (req.cookies.token) {
 		const verify = JWT.verify(req.cookies.jtkn, jTKN);
 		console.log('Success:', verify);
 	}
-});
+}); */
 // END: SERVER MIDDLEWARE
 // --------------------------------------------------------------------------
 // START: SERVER INITIALIZATION

@@ -16,7 +16,12 @@ routes.get('/:id', userCont.getOneUser);
 routes.post('/', userCont.postNewUser);
 routes.patch('/:id', userCont.patchUser);
 routes.delete('/:id', userCont.deleteUser);
-routes.post('/login/:id', userCont.loginUser);
+routes.post(
+	'/login/:id',
+	// userCont.midAuth,
+	userCont.loginUser
+);
+routes.get('/predictions/:id', userCont.getUserPrediction);
 // END: INTERNAL ROUTES
 // --------------------------------------------------------------------------
 // START: MODULE EXPORT

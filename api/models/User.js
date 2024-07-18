@@ -33,17 +33,25 @@ const userSchema = new Schema({
 		type: String,
 		required: true,
 	},
-	predictions: [{type: Schema.Types.ObjectId, ref: 'Prediction'}],
+	predictions: {
+		type: [Schema.Types.ObjectId],
+		ref: 'Prediction',
+	},
+	// predictions: [{type: Schema.Types.ObjectId, ref: 'Prediction'}],
 });
 // END: USERSCHEMA MODEL
 // --------------------------------------------------------------------------
 // START: PREDICTIONSSCHEMA MODEL
 const predictionsSchema = new Schema({
 	_id: Schema.Types.ObjectId,
-	createdBy: [{type: Schema.Types.ObjectId, ref: 'User'}],
+	createdBy: {
+		type: String,
+		required: true,
+	},
 	createdOn: {
 		type: Date,
 		required: true,
+		default: Date.now,
 	},
 	question: {
 		type: String,

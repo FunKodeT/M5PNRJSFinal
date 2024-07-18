@@ -2,7 +2,7 @@ import React from 'react';
 
 const Register = () => {
 	return (
-		<div className="border border-gray-500 rounded py-5 px-5 mt-5">
+		<div className="border border-gray-500 rounded py-5 px-5">
 			<div className="registerHeader">
 				<h1>Would you like to register with us?</h1>
 				<div>

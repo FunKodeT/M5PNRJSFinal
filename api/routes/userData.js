@@ -16,6 +16,8 @@ routes.get('/:id', dataCont.getOnePrediction);
 routes.post('/', dataCont.postNewPrediction);
 routes.patch('/:id', dataCont.patchPrediction);
 routes.delete('/:id', dataCont.deletePrediction);
+routes.post('/predictions', dataCont.findPredictions);
+// routes.get('/predictions/:id', dataCont.findPredictions);
 // routes.post('/ask', dataCont.askAnswer);
 // END: INTERNAL ROUTES
 // --------------------------------------------------------------------------

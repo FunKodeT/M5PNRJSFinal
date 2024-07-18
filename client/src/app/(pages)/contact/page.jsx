@@ -2,7 +2,7 @@ import React from 'react';
 
 const Contact = () => {
 	return (
-		<div className="border border-purple-500 rounded py-5 px-5 mt-5">
+		<div className="border border-purple-500 rounded py-5 px-5">
 			<div className="contactHeader">
 				<h1>You would like to contact us?</h1>
 				<div>

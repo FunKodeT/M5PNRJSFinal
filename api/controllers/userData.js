@@ -1,10 +1,13 @@
 // --------------------------------------------------------------------------
 // START: USERDATA.JS REQUIREMENTS FOR FUNCTIONALITY
 const mongoDb = require('../database/connect.js');
+// const {
+// 	Types: {ObjectId},
+// } = require('mongoose');
+// const {ObjectId} = require('mongoose').Types;
 const ObjectId = require('mongodb').ObjectId;
 const mongoose = require('mongoose');
 const {User, Prediction} = require('../models/User.js');
-const cookie = require('cookie-parser');
 // END: USERDATA.JS REQUIREMENTS FOR FUNCTIONALITY
 // --------------------------------------------------------------------------
 // START: CRUD FUNCTIONS
@@ -58,134 +61,84 @@ const getOnePrediction = async (req, res) => {
 	}
 };
 // --------------------------------------------------------------------------
+
 const postNewPrediction = async (req, res) => {
 	console.log('Start: postNewPrediction', req.body);
 	try {
 		console.log('Start: askObject');
-		let question = await req.body;
-		console.log('Success: askObject', question);
+		const data = req.body;
+		console.log('Success: askObject', data);
 		console.log('Start: createAnswer');
-		const answer = askAnswer();
+		const answer = await askAnswer();
 		console.log('Success: createAnswer', answer);
-		console.log('Start: assignUserTkn');
-		const createdBy = req.cookies['jtkn'];
-		console.log('Success: assignUserTkn', createdBy);
-		console.log('Start: newPredictionModel');
-		const prediction = new Prediction({
-			_id: new mongoose.Types.ObjectId(),
-			createdBy: createdBy,
-			question: question,
-			answer: answer,
-		});
-		/* 		Prediction.create(prediction, (err, prediction) => {
-			user.predictions.push(prediction);
-			user.save();
-		}); */
-		console.log('Success: newPredictionModel');
-		console.log('Start: insertNewPrediction');
-		const response = await mongoDb
-			.getDb()
-			.db()
-			.collection('Prediction')
-			.insertOne(prediction);
-		console.log('Success: insertNewPrediction', response);
-		if (response) {
-			res.status(201).json(response);
-			console.log('Success: postNewPrediction');
-			console.log('Server Response', response);
-			return response;
-		} else if (!response) {
-			res.status(500).json(response.error);
+		if (data.userId && data.userId !== 'guest') {
+			console.log('Start: newPredictionUser');
+			const prediction = new Prediction({
+				_id: new mongoose.Types.ObjectId(),
+				createdBy: data.userId,
+				question: data.question,
+				answer: answer,
+			});
+			console.log('Success: newPredictionUser');
+			console.log('Start: insertNewPrediction');
+			const response = await mongoDb
+				.getDb()
+				.db()
+				.collection('Prediction')
+				.insertOne(prediction);
+			let temp = data.userId;
+			console.log(temp);
+			let testUser = await mongoDb
+				.getDb()
+				.db()
+				.collection('User')
+				.findOneAndUpdate(
+					{_id: new ObjectId(temp)},
+					{$push: {predictions: prediction._id}}
+				);
+			console.log(testUser);
+			console.log('Success: insertNewPrediction', response);
+			if (response) {
+				res.status(201).json(response);
+				console.log('Success: postNewPrediction');
+				console.log('Server Response', response);
+				return response;
+			} else if (!response) {
+				res.status(500).json(response.error);
+			}
+		} else {
+			console.log('Start: newPredictionModel');
+			const prediction = new Prediction({
+				_id: new mongoose.Types.ObjectId(),
+				createdBy: data.guestId,
+				question: data.question,
+				answer: answer,
+			});
+			console.log('Success: newPredictionModel');
+			console.log('Start: insertNewPrediction');
+			const response = await mongoDb
+				.getDb()
+				.db()
+				.collection('Prediction')
+				.insertOne(prediction);
+			console.log('Success: insertNewPrediction', response);
+			if (response) {
+				const guestPrediction = {
+					question: prediction.question,
+					answer: prediction.answer,
+				};
+				res.status(201).json(guestPrediction);
+				console.log('Success: postNewPrediction');
+				console.log('Server Response', response, guestPrediction);
+				return response;
+			} else if (!response) {
+				res.status(500).json(response.error);
+			}
 		}
 	} catch (error) {
 		res.status(500).json(error);
 		console.log('Failure: postNewPrediction', error);
 	}
-	// if (seshUser) {
-	// 	await User.findById(req.connect.sid, (err, user) => {
-	// 		try {
-	// 			console.log('Start: askObject');
-	// 			let newPrediction = {
-	// 				question: req.body.question,
-	// 				answer: '',
-	// 			};
-	// 			console.log('Success: askObject', newPrediction);
-	// 			console.log('Start: insertNew');
-	// 			newPrediction.answer = askAnswer();
-	// 			console.log(newPrediction.answer);
-	// 			const prediction = new Prediction({
-	// 				_id: new mongoose.Types.ObjectId(),
-	// 				createdBy: req.user._id,
-	// 				question: newPrediction.question,
-	// 				answer: newPrediction.answer,
-	// 			});
-	// 			Prediction.create(prediction, (err, prediction) => {
-	// 				user.predictions.push(prediction);
-	// 				user.save();
-	// 			});
-	// 			const response = mongoDb
-	// 				.getDb()
-	// 				.db()
-	// 				.collection('Prediction')
-	// 				.insertOne(prediction);
-	// 			console.log(response);
-	// 			console.log('Success: insertNew');
-	// 			// const assignUser = Prediction.findOne({
-	// 			// 	question: prediction._id,
-	// 			// }).populate('us');
-	// 			if (response) {
-	// 				res.status(201).json(response);
-	// 				console.log('Success: postNewPrediction');
-	// 			} else if (!response) {
-	// 				res.status(500).json(response.error);
-	// 			}
-	// 		} catch (error) {
-	// 			res.status(500).json(error);
-	// 			console.log('Failure: postNewPrediction', error);
-	// 		}
-	// 	});
-	// } else {
-	// 	try {
-	// 		console.log('Start: askObject');
-	// 		let newPrediction = {
-	// 			question: req.body.question,
-	// 			answer: '',
-	// 		};
-	// 		console.log('Success: askObject', newPrediction);
-	// 		console.log('Start: insertNew');
-	// 		newPrediction.answer = askAnswer();
-	// 		console.log(newPrediction.answer);
-	// 		const prediction = new Prediction({
-	// 			_id: new mongoose.Types.ObjectId(),
-	// 			createdBy: req.user._id,
-	// 			question: newPrediction.question,
-	// 			answer: newPrediction.answer,
-	// 		});
-	// 		Prediction.create(prediction, (err, prediction) => {
-	// 			user.predictions.push(prediction);
-	// 			user.save();
-	// 		});
-	// 		const response = mongoDb
-	// 			.getDb()
-	// 			.db()
-	// 			.collection('Prediction')
-	// 			.insertOne(prediction);
-	// 		console.log(response);
-	// 		console.log('Success: insertNew');
-	// 		// const assignUser = Prediction.findOne({
-	// 		// 	question: prediction._id,
-	// 		// }).populate('us');
-	// 		if (response) {
-	// 			res.status(201).json(response);
-	// 			console.log('Success: postNewPrediction');
-	// 		} else if (!response) {
-	// 			res.status(500).json(response.error);
-	// 		}
-	// 	} catch (error) {
-	// 		res.status(500).json(error);
-	// 		console.log('Failure: postNewPrediction', error);
-	// 	}
-	// }
 };
 // --------------------------------------------------------------------------
 const patchPrediction = async (req, res) => {
@@ -311,7 +264,87 @@ const askAnswer = async () => {
 // END: ANSWER ASSIGNMENT FUNCTION
 // --------------------------------------------------------------------------
 // START: USER ATTACHMENT FUNCTION
+/* const findPredictions = async (req, res) => {
+	console.log('Start: findAllPredictions');
+	try {
+		console.log('Start: allocateObject');
+		const {predictionIds} = req.body;
 
+		if (!Array.isArray(predictionIds)) {
+			throw new Error('predictionIds must be an array');
+		}
+
+		console.log('Success: allocateObject', predictionIds);
+		console.log('Start: objectToArray');
+
+		const objectIds = predictionIds
+			.map((id) => {
+				if (typeof id === 'string' && ObjectId.isValid(id)) {
+					return new ObjectId(id);
+				} else {
+					console.warn(`Invalid ObjectId or not a string: ${id}`);
+					return null; // or handle accordingly
+				}
+			})
+			.filter((id) => id !== null);
+
+		console.log('Success: objectToArray', objectIds);
+
+		if (objectIds.length === 0) {
+			console.log('No valid ObjectIds to query.');
+			res.status(200).json([]);
+			return;
+		}
+
+		console.log('Start: retrieveData');
+		const result = await mongoDb
+			.getDb()
+			.db()
+			.collection('Prediction')
+			.find({_id: {$in: objectIds}});
+
+		console.log('Success: retrieveData');
+		console.log('Start: modelToArray');
+
+		const list = await result.toArray();
+		res.setHeader('Content-Type', 'application/json');
+		res.status(200).json(list);
+
+		console.log('Success: modelToArray');
+		console.log('Success: findAllPredictions', list);
+	} catch (error) {
+		console.log('Failure: findAllPredictions', error);
+		res.status(500).json(error);
+	}
+}; */
+const findPredictions = async (req, res) => {
+	console.log('Start: findAllPredictions');
+	try {
+		console.log('Start: allocateObject');
+		const {predictionIds} = req.body;
+		console.log('Success: allocateObject', predictionIds);
+		console.log('Start: objectToArray');
+		const objectIds = predictionIds.map((_id) => new ObjectId(_id));
+		console.log('Success: objectToArray');
+		console.log('Start: retrieveData');
+		const result = await mongoDb
+			.getDb()
+			.db()
+			.collection('Prediction')
+			.find({_id: {$in: objectIds}});
+		console.log('Success: retrieveData');
+		console.log('Start: modelToArray');
+		result.toArray().then((list) => {
+			res.setHeader('Content-Type', 'application/json');
+			res.status(200).json(list);
+		});
+		console.log('Success: modelToArray');
+		console.log('Success: findAllPredictions', result);
+	} catch (error) {
+		console.log('Failure: findAllPredictions', error);
+		res.status(500).json(error);
+	}
+};
 // END: USER ATTACHMENT FUNCTION
 // --------------------------------------------------------------------------
 // START: MODULE EXPORT
@@ -321,6 +354,7 @@ module.exports = {
 	postNewPrediction,
 	patchPrediction,
 	deletePrediction,
+	findPredictions,
 };
 // END: MODULE EXPORT
 // --------------------------------------------------------------------------
